@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-    TextField, 
     FormControl, 
     InputLabel, 
     Input,
@@ -10,138 +9,162 @@ import {
 
 import {
     MuiPickersUtilsProvider,
-    KeyboardTimePicker,
     KeyboardDatePicker,
     } from '@material-ui/pickers';
 
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
-import {DropzoneArea} from 'material-ui-dropzone'
+import GeneratePdf from './GeneratePdf';
 
 export default class Main extends Component {
     constructor(props){
         super(props)
         this.state = {
-          signOne: null,
-          signTwo: null,
-          selectedDate: Date.now(),
-          files: [],
+          selectedDate: new Date(),
           sign1: null,
-          sign2: null
+          sign2: null,
+          venueName: '_____',
+          name1: '_____',
+          name2: '_____',
+          title1: '_____',
+          title2: '_____',
+          generate: false
         }
-        this.handleChange = this.handleChange.bind(this)
         this.handleDateChange = this.handleDateChange.bind(this)
-    }
-
-    handleChange(event, signType) {
-        const file = signType;
-        console.log(signType)
-        this.setState({
-            [file]: URL.createObjectURL(event.target.files[0])
-        })
-        console.log(this.state)
+        this.handleSign = this.handleSign.bind(this)
+        this.handleInput = this.handleInput.bind(this)
+        this.toggleGenerate = this.toggleGenerate.bind(this)
     }
     
     handleDateChange = date => {
+        console.log(date)
         this.setState({
-            selectedDate: date
+            selectedDate: date,
+            generate: false
         })
     };
-    handleFile(files){
-        this.setState({
-          files: files
-        });
-      }
-    fileSelectedHandler(event) {
-        console.log(event.target.files[0])
+    handleSign = (e) => {
+        const reader = new FileReader();
+        const signState = [e.target.id]
+        reader.onload = (e) => {
+            this.setState({
+                [signState]: [e.target.result],
+                generate: false
+              });
+        }
+        reader.readAsDataURL(e.target.files[0])
     }
-    render() {   
+
+    handleInput = (e) => {
+        this.setState({
+            [e.target.id]: e.target.value,
+            generate: false
+        })
+    }
+    toggleGenerate = () => {
+        this.setState({
+            generate: !this.state.generate
+        })
+    }
+
+    render() { 
         return (
             <div>
-                <Container maxWidth="sm">
-                    <form  noValidate autoComplete="off">
-                        <Grid container>
-                            <h3>Contract Generator</h3>
-                            <Grid container item xs={12}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="Name">Place Name</InputLabel>
-                                    <Input id="venueName" />
-                                </FormControl>
-                            </Grid>
-                            <Grid container item xs={12}>
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <Container maxWidth="lg" >
+                    <Grid container>
+                        <Grid item sx={6}>
+                            <Container maxWidth="sm" boxShadow="3">
+                                <h1>Contract Generator</h1>
+                                <form  noValidate autoComplete="off">
                                     <Grid container>
-                                        <KeyboardDatePicker
-                                        disableToolbar
-                                        variant="inline"
-                                        format="dd/MM/yyyy"
-                                        margin="normal"
-                                        id="date-picker-inline"
-                                        label="Signing Date" 
-                                        value={this.state.selectedDate}
-                                        onChange={this.handleDateChange}
-                                        fullWidth
-                                        />
+                                        
+                                        <Grid container item xs={12}>
+                                            <FormControl fullWidth>
+                                                <InputLabel htmlFor="Name">Venue Name</InputLabel>
+                                                <Input onChange={this.handleInput} id="venueName" />
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid container item xs={12}>
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <Grid container>
+                                                    <KeyboardDatePicker
+                                                    margin="normal"
+                                                    id="date-picker-dialog"
+                                                    label="Date picker dialog"
+                                                    format="dd/MM/yyyy"
+                                                    value={this.state.selectedDate}
+                                                    onChange={this.handleDateChange}
+                                                    KeyboardButtonProps={{
+                                                        'aria-label': 'change date',
+                                                    }}
+                                                    fullWidth
+                                                    />
+                                                </Grid>
+                                            </MuiPickersUtilsProvider>
+                                        </Grid>
+                                        <Grid container item xs={12} direction="column" alignItems="center">
+                                            <h4>For Behalf VenueMonk</h4>
+                                        </Grid>
+                                        <Grid container item xs={12}>
+                                            <FormControl fullWidth>
+                                                <InputLabel htmlFor="Name">Name</InputLabel>
+                                                <Input onChange={this.handleInput} id="name1" />
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid container item xs={12}>
+                                            <FormControl fullWidth>
+                                                <InputLabel htmlFor="Name">Title</InputLabel>
+                                                <Input onChange={this.handleInput} id="title1" />
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid container item xs={12}>
+                                            <span className="signature">Signature</span>
+                                            <FormControl fullWidth>
+                                                <input type="file" onChange={this.handleSign} id="sign1" />
+                                                <img className="signature-preview" src={this.state.sign1} />
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid container item xs={12} direction="column" alignItems="center">
+                                            <h4>For Behalf Venue</h4>
+                                        </Grid>
+                                        <Grid container item xs={12}>
+                                            <FormControl fullWidth>
+                                                <InputLabel htmlFor="Name">Name</InputLabel>
+                                                <Input onChange={this.handleInput} id="name2" />
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid container item xs={12}>
+                                            <FormControl fullWidth>
+                                                <InputLabel htmlFor="Name">Title</InputLabel>
+                                                <Input onChange={this.handleInput} id="title2" />
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid container item xs={12}>
+                                            <span className="signature">Signature</span>
+                                            <FormControl fullWidth>
+                                                <input type="file" onChange={this.handleSign} id="sign2" />
+                                                <img className="signature-preview" src={this.state.sign2} />
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid container item xs={12} direction="column" alignItems="center">
+                                            <FormControl margin="normal">
+                                                <Button size="large" variant="contained" color="primary" startIcon={<PictureAsPdfIcon />}
+                                                    onClick={this.toggleGenerate}
+                                                >
+                                                Generate PDF
+                                                </Button>
+                                            </FormControl>
+                                        </Grid>
                                     </Grid>
-                                </MuiPickersUtilsProvider>
-                            </Grid>
-                            <Grid container item xs={12} direction="column" alignItems="center">
-                                <h4>For Behalf Side1</h4>
-                            </Grid>
-                            <Grid container item xs={12}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="Name">Name</InputLabel>
-                                    <Input id="venueName" />
-                                </FormControl>
-                            </Grid>
-                            <Grid container item xs={12}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="Name">Title</InputLabel>
-                                    <Input id="venueName" />
-                                </FormControl>
-                            </Grid>
-                            <Grid container item xs={12}>
-                                <p>Signature:</p>
-                                {/* <DropzoneArea 
-                                filesLimit={1}
-                                acceptedFiles={['image/jpeg', 'image/png', 'image/bmp']}
-                                onChange={this.handleFile.bind(this)}
-                                /> */}
-                                <input type = "file" onChange = {this.fileSelectedHandler} />
-                            </Grid>
-                            <Grid container item xs={12} direction="column" alignItems="center">
-                                <h4>For Behalf Side 2</h4>
-                            </Grid>
-                            <Grid container item xs={12}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="Name">Name</InputLabel>
-                                    <Input id="venueName" />
-                                </FormControl>
-                            </Grid>
-                            <Grid container item xs={12}>
-                                <FormControl fullWidth>
-                                    <InputLabel htmlFor="Name">Title</InputLabel>
-                                    <Input id="venueName" />
-                                </FormControl>
-                            </Grid>
-                            <Grid container item xs={12}>
-                                <p>Signature:</p>
-                                <DropzoneArea 
-                                filesLimit={1}
-                                acceptedFiles={['image/jpeg', 'image/png', 'image/bmp']}
-                                onChange={this.handleFile.bind(this)}
-                                />
-                            </Grid>
-                            <Grid container item xs={12} direction="column" alignItems="center">
-                                <FormControl margin="normal">
-                                    <Button size="large" variant="contained" color="primary" startIcon={<PictureAsPdfIcon />}>
-                                    Generate PDF
-                                    </Button>
-                                </FormControl>
-                            </Grid>
+                                </form>
+                            </Container>
                         </Grid>
-                    </form>
+                        <Grid item sx={6}>
+                            <h1>Preview</h1>
+                            <GeneratePdf details={this.state} />
+                        </Grid>
+                    </Grid>
                 </Container>
             </div>
         )
