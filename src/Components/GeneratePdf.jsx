@@ -10,9 +10,11 @@ export default class GeneratePdf extends Component {
     }
     render() {
         const { sign1, sign2, name1, name2, title1, title2, venueName, selectedDate, generate } = this.props.details;
+        const makeGeneratable = this.props.makeGeneratable;
         console.log("generate: " + generate)
         if(generate===true){
             Pdf.createPdf(this.bodyRef.current)
+            makeGeneratable()
         }
         return (
             <Container ref={this.bodyRef} maxWidth="lg">

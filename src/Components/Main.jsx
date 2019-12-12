@@ -162,7 +162,7 @@ export default class Main extends Component {
                         </Grid>
                         <Grid item sx={6}>
                             <h1>Preview</h1>
-                            <GeneratePdf details={this.state} />
+                            <GeneratePdf details={this.state} makeGeneratable={this.toggleGenerate} />
                         </Grid>
                     </Grid>
                 </Container>
